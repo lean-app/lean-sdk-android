@@ -1,0 +1,3 @@
+rootProject.name = "Lean SDK example"
+include ':app'
+include ':leanSDK'
