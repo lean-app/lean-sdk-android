@@ -2,4 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.lean.leansdk">
 
+    <application>
+        <activity
+            android:name=".LeanWebView"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_lean_sdk"
+            android:theme="@style/Theme.LeanSDK"/>
+    </application>
+
 </manifest>
