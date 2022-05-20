@@ -10,7 +10,7 @@
         <activity
             android:name=".Card"
             android:label="@string/title_activity_card"
-            android:theme="@style/Theme.LeanSDKExample.NoActionBar">
+        >
         </activity>
         <activity
             android:name=".FullScreen"
