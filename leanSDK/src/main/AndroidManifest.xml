@@ -4,9 +4,9 @@
     package="com.lean.leansdk">
 
     <application
-        android:usesCleartextTraffic="true"
         android:fitsSystemWindows="true"
-        tools:targetApi="m">
+        android:exported="true"
+        >
         <activity
             android:name=".Card"
             android:label="@string/title_activity_card"
