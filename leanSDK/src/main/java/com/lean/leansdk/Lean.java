@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.webkit.CookieManager;
 
 import androidx.annotation.RequiresApi;
@@ -27,7 +28,7 @@ public class Lean extends AppCompatActivity {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public void viewCardInfo(
+    public View viewCardInfo(
             Context context,
             String externalToken,
             HashMap<String, String> options) {
@@ -55,6 +56,7 @@ public class Lean extends AppCompatActivity {
         } catch (Exception e) {
             Log.d("ERROR", e.getMessage());
         }
+        return findViewById(android.R.id.content).getRootView();
     }
 
     public void viewOnboarding(Context context) {
