@@ -1,13 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.lean.leansdk">
 
-    <application>
+    <application
+        android:usesCleartextTraffic="true"
+        android:fitsSystemWindows="true"
+        tools:targetApi="m">
         <activity
-            android:name=".LeanWebView"
+            android:name=".Card"
+            android:label="@string/title_activity_card"
+            android:theme="@style/Theme.LeanSDKExample.NoActionBar">
+        </activity>
+        <activity
+            android:name=".FullScreen"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_lean_sdk"
-            android:theme="@style/Theme.LeanSDK"/>
+            android:label="@string/title_activity_fullscreen"
+            android:theme="@style/Theme.LeanSDK" />
     </application>
 
 </manifest>
