@@ -1,8 +1,10 @@
 package com.lean.leansdk;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -17,28 +19,35 @@ public class FullScreen extends AppCompatActivity {
     private WebView webView;
 
 
+    @SuppressLint({"SetJavaScriptEnabled", "AddJavascriptInterface"})
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        View decorView = getWindow().getDecorView();
-        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
-        decorView.setSystemUiVisibility(uiOptions);
+        super.onCreate(savedInstanceState);
+
+        Intent myIntent = getIntent(); // gets the previously created intent
+        String baseUrl = myIntent.getStringExtra("baseUrl");
+        String url = myIntent.getStringExtra("url");
+        setContentView(R.layout.activity_fullscreen);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.hide();
         }
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_fullscreen);
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        View decorView = getWindow().getDecorView();
+        decorView.setSystemUiVisibility(uiOptions);
         webView = findViewById(R.id.webView);
+        webView.addJavascriptInterface(new WebAppInterface(this, baseUrl), "Android");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             WebView.setWebContentsDebuggingEnabled(true);
         }        webView.setWebViewClient(new WebViewClient());
         WebSettings webSettings = webView.getSettings();
         webSettings.setDomStorageEnabled(true);
-        webView.addJavascriptInterface(new WebAppInterface(this), "Android");
         webSettings.setJavaScriptEnabled(true);
-        Intent myIntent = getIntent(); // gets the previously created intent
-        String url = myIntent.getStringExtra("url");
-        webView.loadUrl("http://192.168.4.111:3000/" + url);
+        webSettings.setUseWideViewPort(true);
+        webSettings.setLoadWithOverviewMode(true);
+        Log.d("INFO", baseUrl + url);
+        webView.loadUrl(baseUrl + url);
+        webView.clearView();
     }
 
 

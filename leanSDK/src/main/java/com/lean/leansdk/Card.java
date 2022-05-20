@@ -1,6 +1,7 @@
 package com.lean.leansdk;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -15,16 +16,21 @@ public class Card extends AppCompatActivity {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
+        Intent myIntent = getIntent(); // gets the previously created intent
+        String baseUrl = myIntent.getStringExtra("baseUrl");
+        String url = myIntent.getStringExtra("url");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_card);
         webView = findViewById(R.id.webView);
         webView.setWebViewClient(new WebViewClient());
         WebSettings webSettings = webView.getSettings();
+        webSettings.setDomStorageEnabled(true);
         webSettings.setJavaScriptEnabled(true);
-        webView.addJavascriptInterface(new WebAppInterface(this), "Android");
-        Intent myIntent = getIntent(); // gets the previously created intent
-        String url = myIntent.getStringExtra("url");
-        webView.loadUrl("http://192.168.4.111:3000/" + url);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            WebView.setWebContentsDebuggingEnabled(true);
+        }        webView.setWebViewClient(new WebViewClient());
+        webView.addJavascriptInterface(new WebAppInterface(this, baseUrl), "Android");
+        webView.loadUrl(baseUrl + url);
     }
 
     @Override

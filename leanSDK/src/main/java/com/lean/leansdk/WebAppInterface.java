@@ -10,10 +10,12 @@ import android.webkit.JavascriptInterface;
 
 public class WebAppInterface {
     Context mContext;
+    String baseUrl;
 
     /** Instantiate the interface and set the context */
-    WebAppInterface(Context c) {
+    WebAppInterface(Context c, String receivedBaseUrl) {
         mContext = c;
+        baseUrl = receivedBaseUrl;
     }
 
     /** Show a toast from the web page */
@@ -24,6 +26,7 @@ public class WebAppInterface {
             handler.post(() -> {
                 Log.d("INFO", message);
                 Intent intent = new Intent(mContext, FullScreen.class);
+                intent.putExtra("baseUrl", baseUrl);
                 if (message.equals("navigate-signup")) {
                     intent.putExtra("url", "onboarding");
                 } else if (message.equals("navigate-transactions")) {
@@ -46,7 +49,6 @@ public class WebAppInterface {
     @JavascriptInterface
     public void dismiss() {
         try {
-            Log.d("INFO", "dismissing");
             Handler handler = new Handler(Looper.getMainLooper());
             handler.post(new Runnable() {
                 public void run() {
@@ -67,6 +69,7 @@ public class WebAppInterface {
             handler.post(new Runnable() {
                 public void run() {
                     Intent intent = new Intent(mContext, Card.class);
+                    intent.putExtra("baseUrl", baseUrl);
                     intent.putExtra("url","initial/dashboard");
                     mContext.startActivity(intent);
                 }
