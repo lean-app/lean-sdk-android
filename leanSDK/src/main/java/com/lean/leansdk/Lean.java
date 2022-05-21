@@ -1,5 +1,7 @@
 package com.lean.leansdk;
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -7,6 +9,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.webkit.CookieManager;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,10 +26,19 @@ public class Lean extends AppCompatActivity {
 
     private String token;
     private String baseUrl;
+    private Bundle bundle = new Bundle();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .setReorderingAllowed(true)
+                    .add(R.id.CardFragment, CardFragment.class, bundle)
+                    .commit();
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -35,28 +49,37 @@ public class Lean extends AppCompatActivity {
 
         String env = options.get("environment");
         setBaseUrl(env);
+        View rootView = findViewById(android.R.id.content).getRootView();
 
         try {
             token = externalToken;
             String cookieString = "auth=" + token + " ;path=/";
             CookieManager.getInstance().setCookie(baseUrl, cookieString, (res) -> {
-                Intent intent = new Intent(context, Card.class);
-                intent.putExtra("baseUrl", baseUrl);
+
+                WebView view = (WebView) rootView.findViewById(R.id.webView);
+                view.setWebViewClient(new WebViewClient());
+                WebSettings webSettings = view.getSettings();
+                webSettings.setDomStorageEnabled(true);
+                webSettings.setJavaScriptEnabled(true);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    WebView.setWebContentsDebuggingEnabled(true);
+                }        view.setWebViewClient(new WebViewClient());
+                view.addJavascriptInterface(new WebAppInterface(context, baseUrl), "Android");
+
                 try {
                     if (!isConfirmed(externalToken)) {
-                        intent.putExtra("url", "initial/signup");
+                        view.loadUrl(baseUrl + "initial/signup");
                     } else {
-                        intent.putExtra("url", "initial/card");
+                        view.loadUrl(baseUrl + "initial/card");
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                context.startActivity(intent);
             });
         } catch (Exception e) {
             Log.d("ERROR", e.getMessage());
         }
-        return findViewById(android.R.id.content).getRootView();
+        return rootView;
     }
 
     public void viewOnboarding(Context context) {

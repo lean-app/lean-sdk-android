@@ -68,10 +68,8 @@ public class WebAppInterface {
             Handler handler = new Handler(Looper.getMainLooper());
             handler.post(new Runnable() {
                 public void run() {
-                    Intent intent = new Intent(mContext, Card.class);
-                    intent.putExtra("baseUrl", baseUrl);
-                    intent.putExtra("url","initial/dashboard");
-                    mContext.startActivity(intent);
+                    ((Activity) mContext).finish();
+
                 }
             });
 

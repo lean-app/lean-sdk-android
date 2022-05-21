@@ -3,5 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="650dp"
-    tools:context=".MainActivity"/>
+    android:layout_height="400dp"
+    android:background="#8C0505"
+    tools:context=".MainActivity" />

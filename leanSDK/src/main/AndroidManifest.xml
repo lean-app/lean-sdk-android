@@ -8,12 +8,6 @@
         android:exported="true"
         >
         <activity
-            android:name=".Card"
-            android:label="@string/title_activity_card"
-            android:exported="true"
-            >
-        </activity>
-        <activity
             android:name=".FullScreen"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_fullscreen"
