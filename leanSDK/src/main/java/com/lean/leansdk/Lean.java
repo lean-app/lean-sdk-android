@@ -16,18 +16,25 @@ import androidx.appcompat.app.AppCompatActivity;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class Lean extends AppCompatActivity {
 
     private final String token;
     private final Context context;
     private String baseUrl;
+    private HashMap<String, Object> theme;
 
-    public Lean(Context context, String token, HashMap<String, String> options) {
+    public Lean(Context context, String token, HashMap<String, String> options, HashMap<String, Object> theme) {
         this.token = token;
         this.context = context;
+        this.theme = theme;
         String env = options.get("environment");
         setBaseUrl(env);
     }
@@ -51,6 +58,7 @@ public class Lean extends AppCompatActivity {
                 WebView.setWebContentsDebuggingEnabled(true);
             }        view.setWebViewClient(new WebViewClient());
             view.addJavascriptInterface(new WebAppInterface(context, baseUrl), "Android");
+            view.evaluateJavascript(getStyleScript(), null);
 
             try {
                 if (!isConfirmed(token)) {
@@ -95,5 +103,69 @@ public class Lean extends AppCompatActivity {
                 baseUrl = "https://sdk-web.withlean.com/";
                 break;
         }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    private String getStyleScript() {
+
+        ArrayList<String> commands = new ArrayList<>();
+
+        for (Map.Entry<String, Object> entry : (Iterable<Map.Entry<String, Object>>) theme.entrySet()) {
+            HashMap<String, String> obj = ((HashMap<String, String>) entry.getValue());
+            if (entry.getKey().equals("color")) {
+                if (!Objects.equals((String) obj.get("primary"), "")) {
+                    commands.add("rootStyle.setProperty('--lean-color-primary', '"  + obj.get("primary") + "')");
+                }
+                if (!Objects.equals((String) obj.get("secondary"), "")) {
+                    commands.add("rootStyle.setProperty('--lean-color-secondary', '" + obj.get("secondary") + "')");
+                }
+                if (!Objects.equals((String) obj.get("error"), "")) {
+                    commands.add("rootStyle.setProperty('--lean-color-error', '" + obj.get("error") + "')");
+                }
+                if (!Objects.equals((String) obj.get("textPrimary"), "")) {
+                    commands.add("rootStyle.setProperty('--lean-color-text-primary', '" + obj.get("textPrimary") + "')");
+                }
+                if (!Objects.equals((String) obj.get("textSecondary"), "")) {
+                    commands.add("rootStyle.setProperty('--lean-color-text-secondary', '" + obj.get("textSecondary") + "')");
+                }
+                if (!Objects.equals((String) obj.get("textInteractive"), "")) {
+                    commands.add("rootStyle.setProperty('--lean-color-text-interactive', '" + obj.get("textInteractive") + "')");
+                }
+            } else if (entry.getKey().equals("fontFamily")  && entry.getValue() != "") {
+                commands.add("rootStyle.setProperty('--lean-font-family', '" + entry.getValue() + "')");
+            } else if (entry.getKey().equals("fontWeight")) {
+                if (!Objects.equals((String) obj.get("light"), "")) {
+                    commands.add("rootStyle.setProperty('--lean-font-weight-light', '" + obj.get("light") + "')");
+                }
+                if (!Objects.equals((String) obj.get("regular"), "")) {
+                    commands.add("rootStyle.setProperty('--lean-font-weight-regular', '" + obj.get("regular") + "')");
+                }
+                if (!Objects.equals((String) obj.get("medium"), "")) {
+                    commands.add("rootStyle.setProperty('--lean-font-weight-medium', '" + obj.get("medium") + "')");
+                }
+                if (!Objects.equals((String) obj.get("semibold"), "")) {
+                    commands.add("rootStyle.setProperty('--lean-font-weight-semibold', '" + obj.get("semibold") + "')");
+                }
+                if (!Objects.equals((String) obj.get("bold"), "")) {
+                    commands.add("rootStyle.setProperty('--lean-font-weight-bold', '" + obj.get("bold") + "')");
+                }
+            }
+        }
+
+        if (commands == null || commands.size() <= 0) return "";
+
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = 0; i < commands.size(); i++) {
+
+            sb.append(commands.get(i));
+
+            // if not the last item
+            if (i != commands.size() - 1) {
+                sb.append("; ");
+            }
+
+        }
+        return sb.toString();
     }
 }
