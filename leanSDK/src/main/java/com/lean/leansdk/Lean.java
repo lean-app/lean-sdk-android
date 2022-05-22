@@ -1,13 +1,10 @@
 package com.lean.leansdk;
 
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Build;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.CookieManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -24,68 +21,50 @@ import java.util.HashMap;
 
 public class Lean extends AppCompatActivity {
 
-    private String token;
+    private final String token;
+    private final Context context;
     private String baseUrl;
-    private Bundle bundle = new Bundle();
 
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-
-        super.onCreate(savedInstanceState);
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .setReorderingAllowed(true)
-                    .add(R.id.CardFragment, CardFragment.class, bundle)
-                    .commit();
-        }
+    public Lean(Context context, String token, HashMap<String, String> options) {
+        this.token = token;
+        this.context = context;
+        String env = options.get("environment");
+        setBaseUrl(env);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public View viewCardInfo(
-            Context context,
-            String externalToken,
-            HashMap<String, String> options) {
+    public View getCard() {
 
-        String env = options.get("environment");
-        setBaseUrl(env);
-        View rootView = findViewById(android.R.id.content).getRootView();
-
+        WebView view = null;
         try {
-            token = externalToken;
             String cookieString = "auth=" + token + " ;path=/";
-            CookieManager.getInstance().setCookie(baseUrl, cookieString, (res) -> {
+            CookieManager.getInstance().setCookie(baseUrl, cookieString);
+            view = new WebView(context);
+            view.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT));
 
-                WebView view = (WebView) rootView.findViewById(R.id.webView);
-                view.setWebViewClient(new WebViewClient());
-                WebSettings webSettings = view.getSettings();
-                webSettings.setDomStorageEnabled(true);
-                webSettings.setJavaScriptEnabled(true);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    WebView.setWebContentsDebuggingEnabled(true);
-                }        view.setWebViewClient(new WebViewClient());
-                view.addJavascriptInterface(new WebAppInterface(context, baseUrl), "Android");
+            view.setWebViewClient(new WebViewClient());
+            WebSettings webSettings = view.getSettings();
+            webSettings.setDomStorageEnabled(true);
+            webSettings.setJavaScriptEnabled(true);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                WebView.setWebContentsDebuggingEnabled(true);
+            }        view.setWebViewClient(new WebViewClient());
+            view.addJavascriptInterface(new WebAppInterface(context, baseUrl), "Android");
 
-                try {
-                    if (!isConfirmed(externalToken)) {
-                        view.loadUrl(baseUrl + "initial/signup");
-                    } else {
-                        view.loadUrl(baseUrl + "initial/card");
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
+            try {
+                if (!isConfirmed(token)) {
+                    view.loadUrl(baseUrl + "initial/signup");
+                } else {
+                    view.loadUrl(baseUrl + "initial/card");
                 }
-            });
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         } catch (Exception e) {
             Log.d("ERROR", e.getMessage());
         }
-        return rootView;
-    }
-
-    public void viewOnboarding(Context context) {
-        Intent intent = new Intent(context, FullScreen.class);
-        intent.putExtra("baseUrl", baseUrl);
-        context.startActivity(intent);
+        return view;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
