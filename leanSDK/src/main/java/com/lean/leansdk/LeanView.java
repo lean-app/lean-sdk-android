@@ -10,8 +10,6 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.reactnativeleansdk.WebAppInterface;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -38,12 +36,13 @@ public class LeanView extends WebView {
     private String baseUrl;
     private final EventFuncInterface onEvent;
 
-    public LeanView(Context context, String token, HashMap<String, Object> options, EventFuncInterface onEvent) {
+    public LeanView(Context context, String token, HashMap<String, Object> options, HashMap<String, Object> theme, EventFuncInterface onEvent) {
         super(context);
         this.token = token;
         this.context = context;
         this.onEvent = onEvent;
         this.options = options;
+        this.theme = theme;
         setBaseUrl();
         load();
     }
