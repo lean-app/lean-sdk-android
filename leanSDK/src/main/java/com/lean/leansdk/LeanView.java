@@ -23,10 +23,6 @@ import java.util.function.Function;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
-interface EventFuncInterface {
-  public void operation(String message);
-}
-
 public class LeanView extends WebView {
 
     private String token;
