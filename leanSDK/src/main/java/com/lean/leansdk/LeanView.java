@@ -2,8 +2,6 @@ package com.lean.leansdk;
 
 import android.content.Context;
 import android.os.Build;
-import android.util.Log;
-import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.CookieManager;
 import android.webkit.WebSettings;
@@ -18,10 +16,8 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Function;
 
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
 
 public class LeanView extends WebView {
 
