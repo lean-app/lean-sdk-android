@@ -115,6 +115,7 @@ public class LeanView extends WebView {
 
   @RequiresApi(api = Build.VERSION_CODES.KITKAT)
   private String getStyleScript() {
+    if (theme == null) return "";
 
     ArrayList<String> commands = new ArrayList<>();
 
