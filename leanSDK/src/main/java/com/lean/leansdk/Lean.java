@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.CookieManager;
+import android.webkit.ValueCallback;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -28,8 +29,8 @@ public class Lean extends AppCompatActivity {
 
     private final String token;
     private final Context context;
+    private final HashMap<String, Object> theme;
     private String baseUrl;
-    private HashMap<String, Object> theme;
 
     public Lean(Context context, String token, HashMap<String, String> options, HashMap<String, Object> theme) {
         this.token = token;
@@ -50,16 +51,18 @@ public class Lean extends AppCompatActivity {
             view.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT));
 
-            view.setWebViewClient(new WebViewClient());
             WebSettings webSettings = view.getSettings();
             webSettings.setDomStorageEnabled(true);
             webSettings.setJavaScriptEnabled(true);
+            view.setWebViewClient(new WebViewClient() {
+                public void onPageFinished(WebView view, String url) {
+                    view.evaluateJavascript(getStyleScript(), null);
+                }
+            });
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 WebView.setWebContentsDebuggingEnabled(true);
-            }        view.setWebViewClient(new WebViewClient());
+            }
             view.addJavascriptInterface(new WebAppInterface(context, baseUrl), "Android");
-            view.evaluateJavascript(getStyleScript(), null);
-
             try {
                 if (!isConfirmed(token)) {
                     view.loadUrl(baseUrl + "initial/signup");
@@ -113,46 +116,46 @@ public class Lean extends AppCompatActivity {
         for (Map.Entry<String, Object> entry : (Iterable<Map.Entry<String, Object>>) theme.entrySet()) {
             HashMap<String, String> obj = ((HashMap<String, String>) entry.getValue());
             if (entry.getKey().equals("color")) {
-                if (!Objects.equals((String) obj.get("primary"), "")) {
+                if (!Objects.equals((String) obj.get("primary"), null)) {
                     commands.add("rootStyle.setProperty('--lean-color-primary', '"  + obj.get("primary") + "')");
                 }
-                if (!Objects.equals((String) obj.get("secondary"), "")) {
+                if (!Objects.equals((String) obj.get("secondary"), null)) {
                     commands.add("rootStyle.setProperty('--lean-color-secondary', '" + obj.get("secondary") + "')");
                 }
-                if (!Objects.equals((String) obj.get("error"), "")) {
+                if (!Objects.equals((String) obj.get("error"), null)) {
                     commands.add("rootStyle.setProperty('--lean-color-error', '" + obj.get("error") + "')");
                 }
-                if (!Objects.equals((String) obj.get("textPrimary"), "")) {
+                if (!Objects.equals((String) obj.get("textPrimary"), null)) {
                     commands.add("rootStyle.setProperty('--lean-color-text-primary', '" + obj.get("textPrimary") + "')");
                 }
-                if (!Objects.equals((String) obj.get("textSecondary"), "")) {
+                if (!Objects.equals((String) obj.get("textSecondary"), null)) {
                     commands.add("rootStyle.setProperty('--lean-color-text-secondary', '" + obj.get("textSecondary") + "')");
                 }
-                if (!Objects.equals((String) obj.get("textInteractive"), "")) {
+                if (!Objects.equals((String) obj.get("textInteractive"), null)) {
                     commands.add("rootStyle.setProperty('--lean-color-text-interactive', '" + obj.get("textInteractive") + "')");
                 }
-            } else if (entry.getKey().equals("fontFamily")  && entry.getValue() != "") {
+            } else if (entry.getKey().equals("fontFamily")  && entry.getValue() != null) {
                 commands.add("rootStyle.setProperty('--lean-font-family', '" + entry.getValue() + "')");
             } else if (entry.getKey().equals("fontWeight")) {
-                if (!Objects.equals((String) obj.get("light"), "")) {
+                if (!Objects.equals((String) obj.get("light"), null)) {
                     commands.add("rootStyle.setProperty('--lean-font-weight-light', '" + obj.get("light") + "')");
                 }
-                if (!Objects.equals((String) obj.get("regular"), "")) {
+                if (!Objects.equals((String) obj.get("regular"), null)) {
                     commands.add("rootStyle.setProperty('--lean-font-weight-regular', '" + obj.get("regular") + "')");
                 }
-                if (!Objects.equals((String) obj.get("medium"), "")) {
+                if (!Objects.equals((String) obj.get("medium"), null)) {
                     commands.add("rootStyle.setProperty('--lean-font-weight-medium', '" + obj.get("medium") + "')");
                 }
-                if (!Objects.equals((String) obj.get("semibold"), "")) {
+                if (!Objects.equals((String) obj.get("semibold"), null)) {
                     commands.add("rootStyle.setProperty('--lean-font-weight-semibold', '" + obj.get("semibold") + "')");
                 }
-                if (!Objects.equals((String) obj.get("bold"), "")) {
+                if (!Objects.equals((String) obj.get("bold"), null)) {
                     commands.add("rootStyle.setProperty('--lean-font-weight-bold', '" + obj.get("bold") + "')");
                 }
             }
         }
 
-        if (commands == null || commands.size() <= 0) return "";
+        if (commands.size() <= 0) return "";
 
         StringBuilder sb = new StringBuilder();
 
@@ -166,6 +169,6 @@ public class Lean extends AppCompatActivity {
             }
 
         }
-        return sb.toString();
+        return  "const rootStyle = document.documentElement.style;" + sb.toString();
     }
 }
