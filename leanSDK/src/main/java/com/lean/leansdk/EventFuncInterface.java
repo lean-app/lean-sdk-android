@@ -1,5 +1,5 @@
 package com.lean.leansdk;
 
-interface EventFuncInterface {
+public interface EventFuncInterface {
     void operation(String message);
 }
