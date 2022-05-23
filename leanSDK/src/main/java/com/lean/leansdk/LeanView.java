@@ -98,7 +98,7 @@ public class LeanView extends WebView {
     }
 
     private void setBaseUrl() {
-        if(options == null) return;
+        if(options == null || options.get("environment") == null) return;
         String env = Objects.requireNonNull(options.get("environment")).toString();
         switch (env) {
             case "STAGING":
