@@ -27,24 +27,31 @@ public class FullScreen extends AppCompatActivity {
         Intent myIntent = getIntent(); // gets the previously created intent
         String baseUrl = myIntent.getStringExtra("baseUrl");
         String url = myIntent.getStringExtra("url");
-        setContentView(R.layout.activity_fullscreen);
+        setContentView(com.lean.leansdk.R.layout.activity_fullscreen);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.hide();
         }
+        String styleScript = myIntent.getStringExtra("styleScript");
         int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
         View decorView = getWindow().getDecorView();
         decorView.setSystemUiVisibility(uiOptions);
-        webView = findViewById(R.id.webView);
-        webView.addJavascriptInterface(new WebAppInterface(this, baseUrl), "Android");
+        webView = findViewById(com.lean.leansdk.R.id.webView);
+        webView.addJavascriptInterface(new WebAppInterface(this, baseUrl, null, styleScript), "Android");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             WebView.setWebContentsDebuggingEnabled(true);
-        }        webView.setWebViewClient(new WebViewClient());
+        }
+        webView.setWebViewClient(new WebViewClient() {
+            public void onPageFinished(WebView view, String url) {
+                view.evaluateJavascript(styleScript, null);
+            }
+        });
         WebSettings webSettings = webView.getSettings();
         webSettings.setDomStorageEnabled(true);
         webSettings.setJavaScriptEnabled(true);
         webSettings.setUseWideViewPort(true);
         webSettings.setLoadWithOverviewMode(true);
+
         Log.d("INFO", baseUrl + url);
         webView.loadUrl(baseUrl + url);
         webView.clearView();

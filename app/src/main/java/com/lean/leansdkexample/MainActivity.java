@@ -7,7 +7,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.ViewGroup;
 
-import com.lean.leansdk.Lean;
+import com.lean.leansdk.LeanView;
 
 import java.util.HashMap;
 
@@ -27,8 +27,8 @@ public class MainActivity extends AppCompatActivity {
         color.put("textPrimary", "yellow");
         color.put("textSecondary", "yellow");
         theme.put("color", color);
-        Lean lean =  new Lean(this, token, options, theme);
-        this.addContentView(lean.getCard(), new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+        LeanView lean =  new LeanView(this, token, options, theme, null);
+        this.addContentView(lean, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT));
     }
 }
